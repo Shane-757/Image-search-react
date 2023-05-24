@@ -15,7 +15,7 @@ const ImageGallery = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadMoreLoading, setIsLoadMoreLoading] = useState(false); // New state for the "Load More" button
+  const [isLoadMoreLoading, setIsLoadMoreLoading] = useState(false); 
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const [selectedDropdownValue, setSelectedDropdownValue] = useState(20);
@@ -56,7 +56,7 @@ const ImageGallery = () => {
 
   const handleLoadMore = async () => {
     try {
-      setIsLoadMoreLoading(true); // Set to true when loading more images
+      setIsLoadMoreLoading(true); 
       const nextPage = Math.ceil(images.length / selectedDropdownValue) + 1;
       const response = await axios.get(
         `https://pixabay.com/api/?q=${searchQuery}&page=${nextPage}&key=${PixabayAPIKey}&image_type=photo&orientation=horizontal&per_page=${selectedDropdownValue}`
@@ -84,7 +84,7 @@ const ImageGallery = () => {
        } catch (error) {
       console.error('Error fetching more images from Pixabay:', error);
     } finally {
-      setIsLoadMoreLoading(false); // Set to false when done loading
+      setIsLoadMoreLoading(false); 
     }
   };
 
