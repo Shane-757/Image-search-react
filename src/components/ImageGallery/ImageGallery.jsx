@@ -15,10 +15,12 @@ const ImageGallery = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadMoreLoading, setIsLoadMoreLoading] = useState(false); // New state for the "Load More" button
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const [selectedDropdownValue, setSelectedDropdownValue] = useState(20);
   const [totalHits, setTotalHits] = useState(0);
+    
 
   useEffect(() => {
     setHasReachedEnd(images.length === totalHits);
@@ -54,7 +56,7 @@ const ImageGallery = () => {
 
   const handleLoadMore = async () => {
     try {
-      setIsLoading(true);
+      setIsLoadMoreLoading(true); // Set to true when loading more images
       const nextPage = Math.ceil(images.length / selectedDropdownValue) + 1;
       const response = await axios.get(
         `https://pixabay.com/api/?q=${searchQuery}&page=${nextPage}&key=${PixabayAPIKey}&image_type=photo&orientation=horizontal&per_page=${selectedDropdownValue}`
@@ -79,10 +81,10 @@ const ImageGallery = () => {
         const loadedCount = images.length + hits.length;
         Notiflix.Notify.info(`Loaded ${loadedCount} images out of ${totalHits}`);
       }
-     } catch (error) {
+       } catch (error) {
       console.error('Error fetching more images from Pixabay:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoadMoreLoading(false); // Set to false when done loading
     }
   };
 
@@ -98,7 +100,7 @@ const ImageGallery = () => {
   return (
     <div className="App">
       <Searchbar onSubmit={handleSearchSubmit} onDropdownChange={setSelectedDropdownValue} />
-      {isLoading ? (
+      {isLoading && images.length === 0 ? (
         <Loader />
       ) : (
         <div>
@@ -107,7 +109,7 @@ const ImageGallery = () => {
               <ImageGalleryItem key={image.id} image={image} onClick={openModal} />
             ))}
           </ul>
-          {!hasReachedEnd && images.length > 0 && <Button onClick={handleLoadMore} />}
+          {!hasReachedEnd && images.length > 0 && (isLoadMoreLoading ? <Loader /> : <Button onClick={handleLoadMore} />)}
           {selectedImageIndex !== null && (
             <Modal
               images={images}
@@ -123,10 +125,10 @@ const ImageGallery = () => {
 };
 
 ImageGallery.propTypes = {
-images: PropTypes.arrayOf(PropTypes.object),
-selectedImageIndex: PropTypes.number,
-setSelectedImageIndex: PropTypes.func,
-onClose: PropTypes.func,
+  images: PropTypes.arrayOf(PropTypes.object),
+  selectedImageIndex: PropTypes.number,
+  setSelectedImageIndex: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 
